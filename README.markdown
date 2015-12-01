@@ -2,13 +2,13 @@
 
 ---
 
-
+## In very early stage of development!
 
 Goodbye, Java reflection!
 
 Let's pretend you are using a good library that fits almost all your need, except one thing - some useful fields or classes are private, so you can't access in normal ways.
 
-It's extremely painful to use relections.
+It's extremely painful to use reflections.
 
 ````
 AClass aInstance = someMethod();
