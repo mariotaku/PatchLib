@@ -1,0 +1,5 @@
+rootProject.name = 'PatchLib'
+
+include ':common'
+include ':executable'
+include ':gradle-plugin'

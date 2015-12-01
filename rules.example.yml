@@ -1,0 +1,8 @@
+- com.example.FinalClass:
+  modifiers: -final # This removes final modifier
+  fields:
+    - PRIVATE_FIELD:
+      modifiers: +public # This adds public modifier, and removes private/protected.
+  methods:
+    - protectedMethod:
+      modifiers: public final # Sets public final modifier directly
