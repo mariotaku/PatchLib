@@ -1,5 +1,6 @@
 package org.mariotaku.patchlib.common.processor.impl;
 
+import org.mariotaku.patchlib.common.model.ConfigurationFile;
 import org.mariotaku.patchlib.common.model.PatchClassInfo;
 import org.mariotaku.patchlib.common.processor.LibraryProcessor;
 import org.mariotaku.patchlib.common.util.Utils;
@@ -7,7 +8,6 @@ import org.mariotaku.patchlib.common.util.Utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -18,12 +18,12 @@ import java.util.jar.JarOutputStream;
  */
 public class JarLibraryProcessor extends LibraryProcessor {
 
-    public JarLibraryProcessor(InputStream source, OutputStream target, Map<String, PatchClassInfo> rules, Configuration conf) {
-        super(source, target, rules, conf);
+    public JarLibraryProcessor(InputStream source, OutputStream target, ConfigurationFile conf, Options opts) {
+        super(source, target, conf, opts);
     }
 
-    public JarLibraryProcessor(InputStream source, OutputStream target, Map<String, PatchClassInfo> rules) {
-        super(source, target, rules);
+    public JarLibraryProcessor(InputStream source, OutputStream target, ConfigurationFile conf) {
+        super(source, target, conf);
     }
 
     protected boolean processEntry(JarInputStream inputArchive, JarOutputStream outputArchive, JarEntry entry) throws IOException {
@@ -33,8 +33,7 @@ public class JarLibraryProcessor extends LibraryProcessor {
             processDirectory(outputArchive, entry);
         } else if (entryName.endsWith(".class")) {
             final String className = entryName.substring(0, entryName.length() - ".class".length());
-            final PatchClassInfo classInfo = rules.get(className);
-            processed = Utils.processMatchedClass(inputArchive, outputArchive, entry, classInfo, conf);
+            processed = Utils.processMatchedClass(inputArchive, outputArchive, entry, conf, opts);
         } else if (!entryName.equals(JarFile.MANIFEST_NAME)) {
             processDirectFile(inputArchive, outputArchive, entry);
         }

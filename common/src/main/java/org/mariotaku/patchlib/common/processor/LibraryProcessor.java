@@ -1,5 +1,6 @@
 package org.mariotaku.patchlib.common.processor;
 
+import org.mariotaku.patchlib.common.model.ConfigurationFile;
 import org.mariotaku.patchlib.common.model.PatchClassInfo;
 import org.mariotaku.patchlib.common.processor.impl.AarLibraryProcessor;
 import org.mariotaku.patchlib.common.processor.impl.JarLibraryProcessor;
@@ -23,18 +24,18 @@ public abstract class LibraryProcessor {
 
     public final InputStream source;
     public final OutputStream target;
-    public final Map<String, PatchClassInfo> rules;
-    public final Configuration conf;
+    public final ConfigurationFile conf;
+    public final Options opts;
 
-    public LibraryProcessor(InputStream source, OutputStream target, Map<String, PatchClassInfo> rules) {
-        this(source, target, rules, new Configuration());
+    public LibraryProcessor(InputStream source, OutputStream target, ConfigurationFile conf) {
+        this(source, target, conf, new Options());
     }
 
-    public LibraryProcessor(InputStream source, OutputStream target, Map<String, PatchClassInfo> rules, Configuration conf) {
+    public LibraryProcessor(InputStream source, OutputStream target, ConfigurationFile conf, Options opts) {
         this.source = source;
         this.target = target;
-        this.rules = rules;
         this.conf = conf;
+        this.opts = opts;
     }
 
     public boolean process() throws IOException {
@@ -52,20 +53,20 @@ public abstract class LibraryProcessor {
 
     protected abstract boolean processEntry(JarInputStream inputArchive, JarOutputStream outputArchive, JarEntry entry) throws IOException;
 
-    public static LibraryProcessor get(InputStream source, OutputStream target, Map<String, PatchClassInfo> rules, String name) {
+    public static LibraryProcessor get(InputStream source, OutputStream target, ConfigurationFile conf, String name) {
         if (name.endsWith(".jar")) {
-            return new JarLibraryProcessor(source, target, rules);
+            return new JarLibraryProcessor(source, target, conf);
         } else if (name.endsWith(".aar")) {
-            return new AarLibraryProcessor(source, target, rules);
+            return new AarLibraryProcessor(source, target, conf);
         }
         return null;
     }
 
     public void setExtraClasspath(Set<File> classpath) {
-        conf.setExtraClasspath(classpath);
+        opts.setExtraClasspath(classpath);
     }
 
-    public static class Configuration {
+    public static class Options {
         public Set<File> extraClasspath;
         private ClassLoader cachedClassLoader;
 

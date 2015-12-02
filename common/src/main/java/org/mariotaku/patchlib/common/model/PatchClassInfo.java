@@ -3,6 +3,7 @@ package org.mariotaku.patchlib.common.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.mariotaku.patchlib.common.model.deserializer.ExceptionInfoDeserializer;
 import org.mariotaku.patchlib.common.model.deserializer.ModifierInfoDeserializer;
 
 import java.util.Map;
@@ -60,6 +61,15 @@ public class PatchClassInfo {
         return methods.get(name);
     }
 
+    @Override
+    public String toString() {
+        return "PatchClassInfo{" +
+                "fields=" + fields +
+                ", methods=" + methods +
+                ", modifiers=" + modifiers +
+                '}';
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PatchMemberInfo {
         ModifierInfo modifiers;
@@ -78,10 +88,39 @@ public class PatchClassInfo {
             if (modifiers == null) return access;
             return modifiers.process(access);
         }
+
+        @Override
+        public String toString() {
+            return "PatchMemberInfo{" +
+                    "modifiers=" + modifiers +
+                    '}';
+        }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PatchMethodInfo extends PatchMemberInfo {
+        ExceptionInfo exceptions;
+
+        @JsonProperty("exceptions")
+        public ExceptionInfo getExceptions() {
+            return exceptions;
+        }
+
+        @JsonDeserialize(using = ExceptionInfoDeserializer.class)
+        public void setExceptions(ExceptionInfo exceptions) {
+            this.exceptions = exceptions;
+        }
+
+        @Override
+        public String toString() {
+            return "PatchMethodInfo{" +
+                    "exceptions=" + exceptions +
+                    "} " + super.toString();
+        }
+
+        public String[] processExceptions(String[] array) {
+            return exceptions.process(array);
+        }
     }
 
 }

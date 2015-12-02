@@ -15,7 +15,7 @@ class PatchLibPlugin implements Plugin<Project> {
         project.extensions.create("patchLib", PatchLibExtension, project)
         project.configurations.create('patchCompile')
 
-        project.tasks.create('patchCompile', PatchLibProcessTask) << { PatchLibProcessTask process ->
+        project.tasks.create('patchLib', PatchLibProcessTask) << { PatchLibProcessTask process ->
             def rulePath = project.patchLib?.rule?.absolutePath
             def patchLibDir = new File(project.buildDir, 'patchLib')
             Set execClasspath = []
@@ -27,6 +27,8 @@ class PatchLibPlugin implements Plugin<Project> {
                     execClasspath += project.files(bootClasspath.split(":"))
                 }
             }
+
+            execClasspath += project.rootProject.buildscript.configurations.classpath
             execClasspath += project.buildscript.configurations.classpath
 
             // In order to avoid library clash, all dependency libraries are loaded separately in custom ClassLoader
@@ -45,28 +47,6 @@ class PatchLibPlugin implements Plugin<Project> {
             }
         }
 
-        // Setup process task by assigning configs
-//        project.configurations.patchCompile.files.each { File libFile ->
-//            project.tasks.withType(PatchLibProcessTask) { PatchLibProcessTask process ->
-//                process.main = Main.class.name
-//                process.args = ['-i', libFile.absolutePath, '-o', destinationArchive.absolutePath, '-r', rulePath]
-//
-//                // Add classpaths
-//                project.tasks.withType(JavaCompile) { compile ->
-//
-//                    def bootClasspath = compile.options.bootClasspath
-//                    if (bootClasspath != null) {
-//                        process.classpath += project.files(bootClasspath.split(":"))
-//                    }
-//                    process.classpath += project.configurations.patchCompile
-//                }
-//            }
-//        }
-
-//        project.tasks.withType(PatchLibProcessTask) { process ->
-//            process.dependsOn += patchLibSetupTask
-//        }
-
         project.tasks.withType(JavaCompile) { compile ->
             compile.dependsOn += project.tasks.withType(PatchLibProcessTask)
         }
@@ -75,10 +55,6 @@ class PatchLibPlugin implements Plugin<Project> {
 //        project.repositories.add(project.repositories.flatDir('dirs': 'build/patchLib/aar'))
     }
 
-    static def getTaskName(def file) {
-        def suffix = file.name.replaceAll(/[^\w\d]/, '_')
-        return "patchLib${suffix}"
-    }
 
     static def getAarDependency(String name) {
         def lastDot = name.lastIndexOf('.'), lastDash = name.lastIndexOf('-')

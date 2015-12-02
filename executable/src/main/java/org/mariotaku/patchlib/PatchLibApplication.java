@@ -1,15 +1,13 @@
 package org.mariotaku.patchlib;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.apache.commons.cli.*;
-import org.mariotaku.patchlib.common.model.PatchClassInfo;
+import org.mariotaku.patchlib.common.model.ConfigurationFile;
 import org.mariotaku.patchlib.common.processor.LibraryProcessor;
 
 import java.io.*;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -47,10 +45,9 @@ public class PatchLibApplication {
 
     private boolean startProcess(File inFile, File outFile, File rulesFile, String classpath) throws IOException {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        final Map<String, PatchClassInfo> rules = mapper.readValue(rulesFile, new TypeReference<Map<String, PatchClassInfo>>() {
-        });
+        final ConfigurationFile conf = mapper.readValue(rulesFile, ConfigurationFile.class);
         try (InputStream is = new FileInputStream(inFile); OutputStream os = new FileOutputStream(outFile)) {
-            LibraryProcessor processor = LibraryProcessor.get(is, os, rules, inFile.getName());
+            LibraryProcessor processor = LibraryProcessor.get(is, os, conf, inFile.getName());
             if (processor == null) {
                 throw new UnsupportedOperationException("Unsupported library " + inFile);
             }

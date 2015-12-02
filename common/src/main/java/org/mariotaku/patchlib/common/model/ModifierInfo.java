@@ -81,6 +81,14 @@ public class ModifierInfo {
                 (modifier & Opcodes.ACC_PROTECTED) != 0;
     }
 
+    @Override
+    public String toString() {
+        return "ModifierInfo{" +
+                "operators=" + operators +
+                ", setMode=" + setMode +
+                '}';
+    }
+
     enum Mode {
         ADD, REMOVE, SET
     }

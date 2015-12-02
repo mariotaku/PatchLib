@@ -2,7 +2,7 @@ package org.mariotaku.patchlib.common.util;
 
 import org.mariotaku.patchlib.common.asm.ChangeClassVisitor;
 import org.mariotaku.patchlib.common.asm.ExtendedClassWriter;
-import org.mariotaku.patchlib.common.model.PatchClassInfo;
+import org.mariotaku.patchlib.common.model.ConfigurationFile;
 import org.mariotaku.patchlib.common.processor.LibraryProcessor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -26,22 +26,18 @@ public class Utils {
     }
 
     public static boolean processMatchedClass(JarInputStream inputArchive, JarOutputStream outputArchive, JarEntry entry,
-                                              PatchClassInfo classInfo, LibraryProcessor.Configuration conf) throws IOException {
+                                              ConfigurationFile conf, LibraryProcessor.Options opts) throws IOException {
         final ClassReader cr = new ClassReader(inputArchive);
-        final ClassWriter cw = new ExtendedClassWriter(ClassWriter.COMPUTE_FRAMES, conf.createClassLoader());
+        final ClassWriter cw = new ExtendedClassWriter(ClassWriter.COMPUTE_FRAMES, opts.createClassLoader());
 
-        if (classInfo != null) {
-            final ChangeClassVisitor cv = new ChangeClassVisitor(cw, classInfo);
-            cr.accept(cv, 0);
-        } else {
-            cr.accept(cw, 0);
-        }
+        final ChangeClassVisitor cv = new ChangeClassVisitor(cw, conf, opts);
+        cr.accept(cv, 0);
 
         final JarEntry newEntry = new JarEntry(entry.getName());
         outputArchive.putNextEntry(newEntry);
         outputArchive.write(cw.toByteArray());
         outputArchive.closeEntry();
-        return classInfo != null;
+        return cv.found();
     }
 
     public static void copy(JarInputStream is, JarOutputStream os) throws IOException {
