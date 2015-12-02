@@ -15,27 +15,11 @@ class PatchLibPlugin implements Plugin<Project> {
         project.extensions.create("patchLib", PatchLibExtension, project)
         project.configurations.create('patchCompile')
 
-        // Adds classpath to process task
-//        def patchLibSetupTask = project.tasks.create('patchLibSetup', PatchLibSetupTask) << { PatchLibSetupTask setup ->
-//
-//            project.tasks.withType(JavaCompile) { compile ->
-//
-//                def bootClasspath = compile.options.bootClasspath
-//                project.tasks.withType(PatchLibProcessTask) { patchLibProcess ->
-//                    if (bootClasspath != null) {
-//                        patchLibProcess.classpath += project.files(bootClasspath.split(":"))
-//                    }
-//                    patchLibProcess.classpath += project.configurations.patchCompile
-//                }
-//            }
-//
-//        }
-
-        // Create patch task for each dependency
         project.tasks.create('patchCompile', PatchLibProcessTask) << { PatchLibProcessTask process ->
             def rulePath = project.patchLib?.rule?.absolutePath
             def patchLibDir = new File(project.buildDir, 'patchLib')
             Set execClasspath = []
+            // Add compile classpath and build script classpath to java exec task
             project.tasks.withType(JavaCompile) { compile ->
 
                 def bootClasspath = compile.options.bootClasspath
@@ -45,15 +29,19 @@ class PatchLibPlugin implements Plugin<Project> {
             }
             execClasspath += project.buildscript.configurations.classpath
 
+            // In order to avoid library clash, all dependency libraries are loaded separately in custom ClassLoader
             project.configurations.patchCompile.files.each { File libFile ->
                 def destinationArchive = createLibsFile(patchLibDir, libFile.name)
                 project.javaexec {
                     it.main = Main.class.name
                     it.args = ['-i', libFile.absolutePath, '-o', destinationArchive.absolutePath, '-r', rulePath, '-c',
                                project.configurations.patchCompile.files.join(":")]
-                    // Add classpaths
+                    //
                     it.classpath += project.files(execClasspath)
-                }.rethrowFailure()
+                }
+                project.tasks.withType(JavaCompile) { compile ->
+                    compile.classpath += project.files(destinationArchive)
+                }
             }
         }
 

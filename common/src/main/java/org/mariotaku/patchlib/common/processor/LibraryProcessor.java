@@ -46,6 +46,7 @@ public abstract class LibraryProcessor {
             // Only process .class file
             processed |= processEntry(inputStream, outputStream, entry);
         }
+        outputStream.finish();
         return processed;
     }
 
