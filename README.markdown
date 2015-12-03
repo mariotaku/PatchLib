@@ -78,6 +78,8 @@ rules: # Let you throw custom exceptions in Retrofit
         exceptions: +com/example/CustomException
       createRawCall:
         exceptions: +com/example/CustomException
+      execute:
+        exceptions: +com/example/CustomException
   /retrofit/Call:
     methods:
       execute:
