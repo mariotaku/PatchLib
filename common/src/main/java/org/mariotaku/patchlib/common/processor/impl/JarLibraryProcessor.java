@@ -1,7 +1,6 @@
 package org.mariotaku.patchlib.common.processor.impl;
 
-import org.mariotaku.patchlib.common.model.ConfigurationFile;
-import org.mariotaku.patchlib.common.model.PatchClassInfo;
+import org.mariotaku.patchlib.common.model.ProcessingRules;
 import org.mariotaku.patchlib.common.processor.LibraryProcessor;
 import org.mariotaku.patchlib.common.util.Utils;
 
@@ -18,11 +17,11 @@ import java.util.jar.JarOutputStream;
  */
 public class JarLibraryProcessor extends LibraryProcessor {
 
-    public JarLibraryProcessor(InputStream source, OutputStream target, ConfigurationFile conf, Options opts) {
+    public JarLibraryProcessor(InputStream source, OutputStream target, ProcessingRules conf, CommandLineOptions opts) {
         super(source, target, conf, opts);
     }
 
-    public JarLibraryProcessor(InputStream source, OutputStream target, ConfigurationFile conf) {
+    public JarLibraryProcessor(InputStream source, OutputStream target, ProcessingRules conf) {
         super(source, target, conf);
     }
 
@@ -33,7 +32,7 @@ public class JarLibraryProcessor extends LibraryProcessor {
             processDirectory(outputArchive, entry);
         } else if (entryName.endsWith(".class")) {
             final String className = entryName.substring(0, entryName.length() - ".class".length());
-            processed = Utils.processMatchedClass(inputArchive, outputArchive, entry, conf, opts);
+            processed = Utils.processMatchedClass(inputArchive, outputArchive, entry, rules, opts);
         } else if (!entryName.equals(JarFile.MANIFEST_NAME)) {
             processDirectFile(inputArchive, outputArchive, entry);
         }

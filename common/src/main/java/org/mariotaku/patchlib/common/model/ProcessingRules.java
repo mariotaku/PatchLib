@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by mariotaku on 15/12/2.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ConfigurationFile {
+public class ProcessingRules {
 
     Map<String, PatchClassInfo> rules;
 
@@ -24,7 +24,7 @@ public class ConfigurationFile {
         this.rules = rules;
     }
 
-    public PatchClassInfo getClassInfo(LibraryProcessor.Options opts, String name, String signature,
+    public PatchClassInfo getClassInfo(LibraryProcessor.CommandLineOptions opts, String name, String signature,
                                        String superName, String[] interfaces) {
         if (rules == null) return null;
         for (Map.Entry<String, PatchClassInfo> entry : rules.entrySet()) {
@@ -42,7 +42,7 @@ public class ConfigurationFile {
                 '}';
     }
 
-    private boolean matches(LibraryProcessor.Options opts, String ruleName, String className) {
+    private boolean matches(LibraryProcessor.CommandLineOptions opts, String ruleName, String className) {
         if (ruleName.equals(className)) return true;
         if (ruleName.startsWith("/")) {
             try {

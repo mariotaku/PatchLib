@@ -12,11 +12,12 @@ class PatchLibPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
 
-        project.extensions.create("patchLib", PatchLibExtension, project)
+        project.extensions.create('patchLib', PatchLibExtension)
         project.configurations.create('patchCompile')
 
         project.tasks.create('patchLib', PatchLibProcessTask) << { PatchLibProcessTask process ->
-            def rulePath = project.patchLib?.rule?.absolutePath
+            if (project.hasProperty('patchLib')) return;
+            def props = project.patchLib
             def patchLibDir = new File(project.buildDir, 'patchLib')
             Set execClasspath = []
             // Add compile classpath and build script classpath to java exec task
@@ -36,13 +37,19 @@ class PatchLibPlugin implements Plugin<Project> {
                 def destinationArchive = createLibsFile(patchLibDir, libFile.name)
                 project.javaexec {
                     it.main = Main.class.name
-                    it.args = ['-i', libFile.absolutePath, '-o', destinationArchive.absolutePath, '-r', rulePath, '-c',
-                               project.configurations.patchCompile.files.join(":")]
+                    it.args = ['-i', libFile.absolutePath,
+                               '-o', destinationArchive.absolutePath,
+                               '-r', props.rule?.absolutePath,
+                               '-c', project.configurations.patchCompile.files.join(":"),
+                               '-v', String.valueOf(props.verbose)
+                    ]
                     //
                     it.classpath += project.files(execClasspath)
                 }
-                project.tasks.withType(JavaCompile) { compile ->
-                    compile.classpath += project.files(destinationArchive)
+                if (destinationArchive.exists()) {
+                    project.tasks.withType(JavaCompile) { compile ->
+                        compile.classpath += project.files(destinationArchive)
+                    }
                 }
             }
         }

@@ -1,7 +1,6 @@
 package org.mariotaku.patchlib.common.processor;
 
-import org.mariotaku.patchlib.common.model.ConfigurationFile;
-import org.mariotaku.patchlib.common.model.PatchClassInfo;
+import org.mariotaku.patchlib.common.model.ProcessingRules;
 import org.mariotaku.patchlib.common.processor.impl.AarLibraryProcessor;
 import org.mariotaku.patchlib.common.processor.impl.JarLibraryProcessor;
 import org.mariotaku.patchlib.common.util.Utils;
@@ -10,7 +9,6 @@ import org.xeustechnologies.jcl.JarClassLoader;
 import java.io.*;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -24,17 +22,17 @@ public abstract class LibraryProcessor {
 
     public final InputStream source;
     public final OutputStream target;
-    public final ConfigurationFile conf;
-    public final Options opts;
+    public final ProcessingRules rules;
+    public final CommandLineOptions opts;
 
-    public LibraryProcessor(InputStream source, OutputStream target, ConfigurationFile conf) {
-        this(source, target, conf, new Options());
+    public LibraryProcessor(InputStream source, OutputStream target, ProcessingRules rules) {
+        this(source, target, rules, new CommandLineOptions());
     }
 
-    public LibraryProcessor(InputStream source, OutputStream target, ConfigurationFile conf, Options opts) {
+    public LibraryProcessor(InputStream source, OutputStream target, ProcessingRules rules, CommandLineOptions opts) {
         this.source = source;
         this.target = target;
-        this.conf = conf;
+        this.rules = rules;
         this.opts = opts;
     }
 
@@ -53,22 +51,19 @@ public abstract class LibraryProcessor {
 
     protected abstract boolean processEntry(JarInputStream inputArchive, JarOutputStream outputArchive, JarEntry entry) throws IOException;
 
-    public static LibraryProcessor get(InputStream source, OutputStream target, ConfigurationFile conf, String name) {
+    public static LibraryProcessor get(InputStream source, OutputStream target, String name, ProcessingRules conf, CommandLineOptions opts) {
         if (name.endsWith(".jar")) {
-            return new JarLibraryProcessor(source, target, conf);
+            return new JarLibraryProcessor(source, target, conf, opts);
         } else if (name.endsWith(".aar")) {
-            return new AarLibraryProcessor(source, target, conf);
+            return new AarLibraryProcessor(source, target, conf, opts);
         }
         return null;
     }
 
-    public void setExtraClasspath(Set<File> classpath) {
-        opts.setExtraClasspath(classpath);
-    }
-
-    public static class Options {
+    public static class CommandLineOptions {
         public Set<File> extraClasspath;
         private ClassLoader cachedClassLoader;
+        private boolean verbose;
 
         public Set<File> getExtraClasspath() {
             return extraClasspath;
@@ -107,6 +102,14 @@ public abstract class LibraryProcessor {
                 }
             }
             return jcl;
+        }
+
+        public void setVerbose(boolean verbose) {
+            this.verbose = verbose;
+        }
+
+        public boolean isVerbose() {
+            return verbose;
         }
     }
 }

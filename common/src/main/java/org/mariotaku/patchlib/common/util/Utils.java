@@ -2,7 +2,7 @@ package org.mariotaku.patchlib.common.util;
 
 import org.mariotaku.patchlib.common.asm.ChangeClassVisitor;
 import org.mariotaku.patchlib.common.asm.ExtendedClassWriter;
-import org.mariotaku.patchlib.common.model.ConfigurationFile;
+import org.mariotaku.patchlib.common.model.ProcessingRules;
 import org.mariotaku.patchlib.common.processor.LibraryProcessor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -26,7 +26,7 @@ public class Utils {
     }
 
     public static boolean processMatchedClass(JarInputStream inputArchive, JarOutputStream outputArchive, JarEntry entry,
-                                              ConfigurationFile conf, LibraryProcessor.Options opts) throws IOException {
+                                              ProcessingRules conf, LibraryProcessor.CommandLineOptions opts) throws IOException {
         final ClassReader cr = new ClassReader(inputArchive);
         final ClassWriter cw = new ExtendedClassWriter(ClassWriter.COMPUTE_FRAMES, opts.createClassLoader());
 

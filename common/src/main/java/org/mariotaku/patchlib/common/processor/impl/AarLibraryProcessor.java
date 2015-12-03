@@ -1,6 +1,6 @@
 package org.mariotaku.patchlib.common.processor.impl;
 
-import org.mariotaku.patchlib.common.model.ConfigurationFile;
+import org.mariotaku.patchlib.common.model.ProcessingRules;
 import org.mariotaku.patchlib.common.processor.LibraryProcessor;
 import org.mariotaku.patchlib.common.util.Utils;
 
@@ -16,11 +16,11 @@ import java.util.jar.JarOutputStream;
  */
 public class AarLibraryProcessor extends LibraryProcessor {
 
-    public AarLibraryProcessor(InputStream source, OutputStream target, ConfigurationFile conf) {
+    public AarLibraryProcessor(InputStream source, OutputStream target, ProcessingRules conf) {
         super(source, target, conf);
     }
 
-    public AarLibraryProcessor(InputStream source, OutputStream target, ConfigurationFile conf, Options opts) {
+    public AarLibraryProcessor(InputStream source, OutputStream target, ProcessingRules conf, CommandLineOptions opts) {
         super(source, target, conf, opts);
     }
 
@@ -31,11 +31,11 @@ public class AarLibraryProcessor extends LibraryProcessor {
         if (entry.isDirectory()) {
             JarLibraryProcessor.processDirectory(outputStream, entry);
         } else if (entryName.endsWith(".class")) {
-            processed = Utils.processMatchedClass(inputStream, outputStream, entry, conf, opts);
+            processed = Utils.processMatchedClass(inputStream, outputStream, entry, rules, opts);
         } else if (entryName.endsWith(".jar")) {
             final JarEntry newEntry = new JarEntry(entry.getName());
             outputStream.putNextEntry(newEntry);
-            JarLibraryProcessor processor = new JarLibraryProcessor(inputStream, outputStream, conf, opts);
+            JarLibraryProcessor processor = new JarLibraryProcessor(inputStream, outputStream, rules, opts);
             processed = processor.process();
             outputStream.closeEntry();
         } else {

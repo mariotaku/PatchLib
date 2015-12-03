@@ -1,17 +1,17 @@
 package org.mariotaku.patchlib.common.asm;
 
-import org.mariotaku.patchlib.common.model.ConfigurationFile;
 import org.mariotaku.patchlib.common.model.PatchClassInfo;
+import org.mariotaku.patchlib.common.model.ProcessingRules;
 import org.mariotaku.patchlib.common.processor.LibraryProcessor;
 import org.objectweb.asm.*;
 
 public class ChangeClassVisitor extends ClassVisitor {
 
-    private final ConfigurationFile conf;
-    private final LibraryProcessor.Options opts;
+    private final ProcessingRules conf;
+    private final LibraryProcessor.CommandLineOptions opts;
     private PatchClassInfo classInfo;
 
-    public ChangeClassVisitor(ClassWriter cw, ConfigurationFile conf, LibraryProcessor.Options opts) {
+    public ChangeClassVisitor(ClassWriter cw, ProcessingRules conf, LibraryProcessor.CommandLineOptions opts) {
         super(Opcodes.ASM5, cw);
         this.conf = conf;
         this.opts = opts;
@@ -21,7 +21,9 @@ public class ChangeClassVisitor extends ClassVisitor {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         classInfo = conf.getClassInfo(opts, name, signature, superName, interfaces);
         if (classInfo != null) {
-            System.out.printf("Processing class %s\n", name);
+            if (opts.isVerbose()) {
+                System.out.printf("Processing class %s\n", name);
+            }
             access = classInfo.processModifiers(access);
         }
         super.visit(version, access, name, signature, superName, interfaces);
@@ -32,7 +34,9 @@ public class ChangeClassVisitor extends ClassVisitor {
         if (classInfo != null) {
             PatchClassInfo.PatchMemberInfo fieldInfo = classInfo.getFieldInfo(name);
             if (fieldInfo != null) {
-                System.out.printf("Processing field %s\n", name);
+                if (opts.isVerbose()) {
+                    System.out.printf("Processing field %s\n", name);
+                }
                 access = fieldInfo.processModifiers(access);
             }
         }
@@ -44,7 +48,9 @@ public class ChangeClassVisitor extends ClassVisitor {
         if (classInfo != null) {
             PatchClassInfo.PatchMethodInfo fieldInfo = classInfo.getMethodInfo(name);
             if (fieldInfo != null) {
-                System.out.printf("Processing method %s\n", name);
+                if (opts.isVerbose()) {
+                    System.out.printf("Processing method %s\n", name);
+                }
                 access = fieldInfo.processModifiers(access);
                 exceptions = fieldInfo.processExceptions(exceptions);
             }
