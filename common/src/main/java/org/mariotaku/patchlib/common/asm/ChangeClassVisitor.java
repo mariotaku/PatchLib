@@ -43,8 +43,8 @@ public class ChangeClassVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         if (classInfo != null) {
             PatchClassInfo.PatchMethodInfo fieldInfo = classInfo.getMethodInfo(name);
-            System.out.printf("Processing method %s\n", name);
             if (fieldInfo != null) {
+                System.out.printf("Processing method %s\n", name);
                 access = fieldInfo.processModifiers(access);
                 exceptions = fieldInfo.processExceptions(exceptions);
             }
