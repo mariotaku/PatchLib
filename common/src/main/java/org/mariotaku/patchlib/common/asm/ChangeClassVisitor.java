@@ -21,7 +21,7 @@ public class ChangeClassVisitor extends ClassVisitor {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         classInfo = conf.getClassInfo(opts, name, signature, superName, interfaces);
         if (classInfo != null) {
-            System.out.printf("Processing class %s, info: %s\n", name, classInfo);
+            System.out.printf("Processing class %s\n", name);
             access = classInfo.processModifiers(access);
         }
         super.visit(version, access, name, signature, superName, interfaces);
