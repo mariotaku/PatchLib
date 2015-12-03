@@ -43,7 +43,7 @@ public class ConfigurationFile {
     }
 
     private boolean matches(LibraryProcessor.Options opts, String ruleName, String className) {
-        if (rules.containsKey(className)) return true;
+        if (ruleName.equals(className)) return true;
         if (ruleName.startsWith("/")) {
             try {
                 final ClassLoader loader = opts.createClassLoader();

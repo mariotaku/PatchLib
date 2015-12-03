@@ -21,7 +21,7 @@ public class ChangeClassVisitor extends ClassVisitor {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         classInfo = conf.getClassInfo(opts, name, signature, superName, interfaces);
         if (classInfo != null) {
-            System.out.printf("Processing class %s\n", name);
+            System.out.printf("Processing class %s, info: %s\n", name, classInfo);
             access = classInfo.processModifiers(access);
         }
         super.visit(version, access, name, signature, superName, interfaces);
@@ -43,8 +43,8 @@ public class ChangeClassVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         if (classInfo != null) {
             PatchClassInfo.PatchMethodInfo fieldInfo = classInfo.getMethodInfo(name);
+            System.out.printf("Processing method %s\n", name);
             if (fieldInfo != null) {
-                System.out.printf("Processing method %s\n", name);
                 access = fieldInfo.processModifiers(access);
                 exceptions = fieldInfo.processExceptions(exceptions);
             }
