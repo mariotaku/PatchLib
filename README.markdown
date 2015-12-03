@@ -10,7 +10,7 @@ Let's pretend you are using a good library that fits almost all your need, excep
 
 It's extremely painful to use reflections.
 
-````
+````java
 AClass aInstance = someMethod();
 Class<?> cls = Class.forName("com.example.ADefaultClass");
 cls.setAccessible(true);
@@ -28,7 +28,7 @@ Hey! since classes in those libraries will be shipped with our binary, why can't
 With PatchLib, all you need to do is write a rule file in .yml format like this:
 
 
-````
+````yaml
 rules:
   - com/example/ADefaultClass:
     modifiers: +public # Make public
@@ -46,7 +46,7 @@ rules:
 ... and use your desired classes like this:
 
 
-````
+````java
 AClass aInstance = someMethod();
 aInstance.aPrivateField.privateMethod("Parameter");
 
@@ -58,7 +58,7 @@ That's it!
 
 There're more advanced usages:
 
-````
+````yaml
 rules: # Let you throw custom exceptions in Retrofit
   /retrofit/Converter: # Will match all subclasses if name beginning with a slash
     methods:
