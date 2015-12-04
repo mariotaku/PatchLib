@@ -29,17 +29,16 @@ With PatchLib, all you need to do is write a rule file in .yml format like this:
 
 
 ````yaml
-rules:
-  - com/example/ADefaultClass:
-    modifiers: +public # Make public
-    fields:
-      - aPrivateField:
-        modifiers: +public # Make public
-  - com/example/APrivateFieldType:
-    modifiers: +public # Make public
-    methods:
-      - privateMethod:
-        modifiers: +public # Make public
+com/example/ADefaultClass:
+  modifiers: +public # Make public
+  fields:
+    - aPrivateField:
+      modifiers: +public # Make public
+com/example/APrivateFieldType:
+  modifiers: +public # Make public
+  methods:
+    - privateMethod:
+      modifiers: +public # Make public
         
 ````
 
@@ -59,39 +58,39 @@ That's it!
 There're more advanced usages:
 
 ````yaml
-rules: # Let you throw custom exceptions in Retrofit
-  /retrofit/Converter: # Will match all subclasses if name beginning with a slash
-    methods:
-      convert:
-        exceptions: +com/example/CustomException
-  /retrofit/RequestBuilderAction:
-    methods:
-      perform:
-        exceptions: +com/example/CustomException
-  /retrofit/RequestFactory:
-    methods:
-      create:
-        exceptions: +com/example/CustomException
-  retrofit/OkHttpCall:
-    methods:
-      parseResponse:
-        exceptions: +com/example/CustomException
-      createRawCall:
-        exceptions: +com/example/CustomException
-      execute:
-        exceptions: +com/example/CustomException
-  /retrofit/Call:
-    methods:
-      execute:
-        exceptions: +com/example/CustomException
-  /retrofit/CallAdapter:
-    methods:
-      adapt:
-        exceptions: +com/example/CustomException
-  retrofit/MethodHandler:
-    methods:
-      invoke:
-        exceptions: +com/example/CustomException
+# Let you throw custom exceptions in Retrofit
+/retrofit/Converter: # Will match all subclasses if name beginning with a slash
+methods:
+  convert:
+    exceptions: +com/example/CustomException
+/retrofit/RequestBuilderAction:
+methods:
+  perform:
+    exceptions: +com/example/CustomException
+/retrofit/RequestFactory:
+methods:
+  create:
+    exceptions: +com/example/CustomException
+retrofit/OkHttpCall:
+methods:
+  parseResponse:
+    exceptions: +com/example/CustomException
+  createRawCall:
+    exceptions: +com/example/CustomException
+  execute:
+    exceptions: +com/example/CustomException
+/retrofit/Call:
+methods:
+  execute:
+    exceptions: +com/example/CustomException
+/retrofit/CallAdapter:
+methods:
+  adapt:
+    exceptions: +com/example/CustomException
+retrofit/MethodHandler:
+methods:
+  invoke:
+    exceptions: +com/example/CustomException
 
 ````
 

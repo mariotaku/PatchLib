@@ -15,9 +15,9 @@ class PatchLibPlugin implements Plugin<Project> {
         project.extensions.create('patchLib', PatchLibExtension)
         project.configurations.create('patchCompile')
 
-        project.tasks.create('patchLib', PatchLibProcessTask) << { PatchLibProcessTask process ->
-            if (project.hasProperty('patchLib')) return;
-            def props = project.patchLib
+        project.tasks.create('patchLibProcess', PatchLibProcessTask) << { PatchLibProcessTask process ->
+            PatchLibExtension props = project.extensions.findByType(PatchLibExtension)
+            if (!props) return;
             def patchLibDir = new File(project.buildDir, 'patchLib')
             Set execClasspath = []
             // Add compile classpath and build script classpath to java exec task
@@ -39,8 +39,8 @@ class PatchLibPlugin implements Plugin<Project> {
                     it.main = Main.class.name
                     it.args = ['-i', libFile.absolutePath,
                                '-o', destinationArchive.absolutePath,
-                               '-r', props.rule?.absolutePath,
-                               '-c', project.configurations.patchCompile.files.join(":"),
+                               '-r', props.rules.getAsPath(),
+                               '-c', project.configurations.patchCompile.getAsPath(),
                                '-v', String.valueOf(props.verbose)
                     ]
                     //

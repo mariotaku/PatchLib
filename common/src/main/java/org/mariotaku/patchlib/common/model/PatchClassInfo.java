@@ -119,6 +119,7 @@ public class PatchClassInfo {
         }
 
         public String[] processExceptions(String[] array) {
+            if (exceptions == null) return array;
             return exceptions.process(array);
         }
     }

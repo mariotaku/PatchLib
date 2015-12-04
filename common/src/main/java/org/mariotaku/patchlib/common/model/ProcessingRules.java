@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.mariotaku.patchlib.common.processor.LibraryProcessor;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -56,5 +57,10 @@ public class ProcessingRules {
             }
         }
         return false;
+    }
+
+    public void addRules(Map<String, PatchClassInfo> infoMap) {
+        if (rules == null) rules = new HashMap<>();
+        rules.putAll(infoMap);
     }
 }
