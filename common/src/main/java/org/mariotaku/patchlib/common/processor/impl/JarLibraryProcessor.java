@@ -31,7 +31,6 @@ public class JarLibraryProcessor extends LibraryProcessor {
         if (entry.isDirectory()) {
             processDirectory(outputArchive, entry);
         } else if (entryName.endsWith(".class")) {
-            final String className = entryName.substring(0, entryName.length() - ".class".length());
             processed = Utils.processMatchedClass(inputArchive, outputArchive, entry, rules, opts);
         } else if (!entryName.equals(JarFile.MANIFEST_NAME)) {
             processDirectFile(inputArchive, outputArchive, entry);

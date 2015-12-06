@@ -41,8 +41,7 @@ public class PatchLibApplication {
                 if (startProcess(inFile, outFile, cmd)) {
                     System.out.println("Process finished!");
                 } else {
-                    //noinspection ResultOfMethodCallIgnored
-                    outFile.delete();
+                    System.out.println("Library left unchanged.");
                 }
             }
         } else {
@@ -61,7 +60,9 @@ public class PatchLibApplication {
             conf.addRules(rulesMap);
         }
         try (InputStream is = new FileInputStream(inFile); OutputStream os = new FileOutputStream(outFile)) {
-            final LibraryProcessor processor = LibraryProcessor.get(is, os, inFile.getName(), conf, getOptions(cmdLine));
+            final LibraryProcessor.CommandLineOptions options = getOptions(cmdLine);
+            options.setSourceFilePath(inFile.getAbsolutePath());
+            final LibraryProcessor processor = LibraryProcessor.get(is, os, inFile.getName(), conf, options);
             if (processor == null) {
                 throw new UnsupportedOperationException("Unsupported library " + inFile);
             }

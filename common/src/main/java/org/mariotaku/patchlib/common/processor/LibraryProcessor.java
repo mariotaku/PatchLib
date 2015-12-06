@@ -3,17 +3,14 @@ package org.mariotaku.patchlib.common.processor;
 import org.mariotaku.patchlib.common.model.ProcessingRules;
 import org.mariotaku.patchlib.common.processor.impl.AarLibraryProcessor;
 import org.mariotaku.patchlib.common.processor.impl.JarLibraryProcessor;
-import org.mariotaku.patchlib.common.util.Utils;
 import org.xeustechnologies.jcl.JarClassLoader;
 
 import java.io.*;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.JarInputStream;
-import java.util.jar.JarOutputStream;
+import java.util.jar.*;
 
 /**
  * Created by mariotaku on 15/11/30.
@@ -39,7 +36,18 @@ public abstract class LibraryProcessor {
     public boolean process() throws IOException {
         boolean processed = false;
         final JarInputStream inputStream = new JarInputStream(source);
-        final JarOutputStream outputStream = Utils.openJarOutputStreamForCopy(inputStream, target);
+
+        Manifest manifest = inputStream.getManifest();
+        if (manifest == null) {
+            manifest = new Manifest();
+        }
+        if (opts.sourceFilePath != null) {
+            final Map<String, Attributes> entries = manifest.getEntries();
+            Attributes attributes = new Attributes();
+            attributes.put(new Attributes.Name("Source-File-Path"), opts.sourceFilePath);
+            entries.put("PatchLib", attributes);
+        }
+        final JarOutputStream outputStream = new JarOutputStream(target, manifest);
         JarEntry entry;
         while ((entry = inputStream.getNextJarEntry()) != null) {
             // Only process .class file
@@ -64,6 +72,7 @@ public abstract class LibraryProcessor {
         public Set<File> extraClasspath;
         private ClassLoader cachedClassLoader;
         private boolean verbose;
+        private String sourceFilePath;
 
         public Set<File> getExtraClasspath() {
             return extraClasspath;
@@ -110,6 +119,14 @@ public abstract class LibraryProcessor {
 
         public boolean isVerbose() {
             return verbose;
+        }
+
+        public void setSourceFilePath(String comment) {
+            this.sourceFilePath = comment;
+        }
+
+        public String getSourceFilePath() {
+            return sourceFilePath;
         }
     }
 }
